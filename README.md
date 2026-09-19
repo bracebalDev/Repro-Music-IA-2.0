@@ -160,7 +160,7 @@ python -m http.server 8080
 
 ## 👨‍💻 Sobre el Desarrollador
 
-**Brayan Balza** — *Frontend & Software Developer*
+**Brayan Ceballos** — *Frontend & Software Developer*
 
 - 🌐 GitHub: [@bracebalDev](https://github.com/bracebalDev)
 - 💼 Proyecto: BEATS Music Player v2.0
