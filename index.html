@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beats</title>
+    <meta name="description" content="Disfruta de tu música favorita con nuestro reproductor intuitivo y versátil. Calidad de sonido superior en todos tus dispositivos.">
+    <meta name="keywords" content="Musica, musica latina, musica pop, musica alternativa, rock, playlist">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="/Assets/Logo.svg" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="flex flex-col">
+    <header>
+        <nav class="navbar">
+            <img src="/Assets/Logo.svg" alt="">
+            <ul>
+                <li>BEATS</li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="flex flex-1">
+        <!-- Este div es el lado izquierdo donde se encuentran las canciones -->
+        <div id="track-list" class="flex-1 overflow-auto gap-4 p-4">
+
+        </div>
+
+        <!-- Línea vertical con color personalizado -->
+        <div class="w-px bg-custom-purple"></div>
+
+        <!-- Este es el lado derecho donde está la canción actual -->
+        <div class="w-96 ml-8 mr-8" id="player">
+            <img src="/Assets/starting.jpg" id="song-image" class="rounded-lg" alt="">
+        
+            <div>
+                <h2 id="song-title"></h2>
+                <p id="song-author"></p>
+            </div>
+        
+            <div class="flex justify-center space-x-4">
+                <!-- Botones del reproductor -->
+                <button id="back-button">
+                    <img src="/Assets/back.png" alt="Back">
+                </button>
+                <button id="play-pause-button">
+                    <img src="/Assets/play.png" alt="Play/Pause">
+                </button>
+                <button id="next-button">
+                    <img src="/Assets/next.png" alt="Next">
+                </button>
+            </div>
+        
+            <audio id="audio-player" src="" autoplay></audio>
+        </div>        
+
+    </main>
+    <script src="/script.js"></script>
+</body>
+</html>

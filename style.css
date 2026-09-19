@@ -1,0 +1,75 @@
+:root{
+    --margin-page:60px;
+    --color-primary: #A375DB;
+    --color-action: #B42CDB ;
+    --color-secundary: #DB2CBA;
+    --color-tertiary: #7A2BDC;
+    --color-quarter: #412CDB;
+    --color-black: #2E2E2E;
+    --color-white: #F2F2F5;
+}
+/*Fuente de texto*/
+@font-face {
+    font-family: Acme-Regular;
+    src: url(/Font/Acme-Regular.ttf);
+}
+
+*{
+    padding: unset;
+    margin: unset;
+    border: unset;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 400;
+    font-family: 'Acme-Regular','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    list-style: none;
+    box-sizing: border-box;
+    line-height: none;
+    outline: unset;
+}
+
+header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #2E2E2E;
+}
+
+body{
+    background-color: #2E2E2E;
+    color: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+}
+
+/*Barra de Navegación*/
+.navbar{
+    display: flex;
+    align-items: center;
+    padding: 16px var(--margin-page);
+}
+
+#track-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+#track-list .song {
+    transition: background .3s ease-in;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 var(--color-primary);
+    transition: background .3s ease-in;
+}
+
+#track-list .song:hover {
+    background-color: #A375DB;
+}
+
+#track-list .song.playing {
+    background-color: var(--color-primary);
+    box-shadow: 0 4px 8px 0 rgba(65, 44, 219, 0.4);
+}
+
+.bg-custom-purple {
+    background-color: #412CDB;
+}

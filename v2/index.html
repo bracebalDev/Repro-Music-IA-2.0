@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEATS v2.0 | Reproductor de Música Inteligente</title>
+    
+    <!-- Metadatos de SEO y Redes Sociales -->
+    <meta name="description" content="Reproductor de música moderno, ultra rápido, accesible y resiliente con arquitectura modular en Vanilla JavaScript.">
+    <meta name="keywords" content="reproductor de musica, beats, web audio player, vanilla javascript, modern css, portfolio">
+    <meta name="author" content="Brayan Balza">
+    <meta name="theme-color" content="#2E2E2E">
+    <meta property="og:title" content="BEATS v2.0 - Reproductor de Música Profesional">
+    <meta property="og:description" content="Versión refactorizada con arquitectura modular, diseño responsivo, controles avanzados y seguridad reforzada.">
+    <meta property="og:type" content="website">
+    
+    <!-- Medidas de Ciberseguridad: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https: blob:;
+        media-src 'self' https: blob:;
+        font-src 'self';
+        connect-src 'self' https://api.institutoalfa.org https:;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../Assets/Logo.svg" type="image/svg+xml">
+    
+    <!-- Preload de fuente principal -->
+    <link rel="preload" href="../Font/Acme-Regular.ttf" as="font" type="font/ttf" crossorigin>
+    
+    <!-- Estilos CSS Refactorizados (Sin dependencias externas pesadas) -->
+    <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+    <!-- Encabezado y Barra de Navegación -->
+    <header class="app-header">
+        <nav class="navbar" aria-label="Navegación principal">
+            <div class="brand-container">
+                <img src="../Assets/Logo.svg" alt="Logotipo de Beats" class="brand-logo" width="40" height="40">
+                <div class="brand-meta">
+                    <h1 class="brand-title">BEATS</h1>
+                    <span class="brand-version-badge">v2.0</span>
+                </div>
+            </div>
+
+            <!-- Barra de Búsqueda Interactiva -->
+            <div class="search-bar" role="search">
+                <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input 
+                    type="search" 
+                    id="search-input" 
+                    placeholder="Buscar canción o artista... (Presiona /)"
+                    aria-label="Buscar canciones por título o artista"
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <button id="clear-search-btn" class="clear-search-btn hidden" aria-label="Limpiar búsqueda">✕</button>
+            </div>
+
+            <!-- Acciones y Estado de Conexión -->
+            <div class="header-actions">
+                <span id="connection-status" class="status-badge" title="Estado de la fuente de datos">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Conectando...</span>
+                </span>
+                
+                <button id="shortcuts-btn" class="icon-btn" title="Atajos de teclado" aria-label="Ver atajos de teclado">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                        <path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm8 7H9v-2h6v2zm1-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenedor Principal con Layout Adaptativo de 2 Columnas -->
+    <main class="app-main">
+        <!-- Columna Izquierda: Catálogo y Filtros -->
+        <section class="tracklist-section" aria-label="Lista de canciones">
+            <!-- Barra de Filtros por Género/Categoría -->
+            <div class="filters-bar" role="toolbar" aria-label="Filtros de catálogo">
+                <button class="filter-chip active" data-filter="all">Todas</button>
+                <button class="filter-chip" data-filter="Pop">Pop</button>
+                <button class="filter-chip" data-filter="Rock">Rock</button>
+                <button class="filter-chip" data-filter="Indie">Indie / Alternativo</button>
+                <button class="filter-chip" data-filter="Latino">Latino</button>
+            </div>
+
+            <!-- Encabezado de la lista -->
+            <div class="tracklist-header">
+                <h2 class="section-title">Canciones Disponibles</h2>
+                <span id="track-count" class="track-count-badge">0 temas</span>
+            </div>
+
+            <!-- Grid de Canciones (Se renderiza de forma segura y dinámica) -->
+            <div id="track-list" class="track-grid" role="listbox" aria-label="Lista de reproducción">
+                <!-- Skeleton Loader durante la carga -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+
+            <!-- Estado Vacío cuando la búsqueda no arroja resultados -->
+            <div id="empty-state" class="empty-state hidden" aria-live="polite">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="currentColor" opacity="0.4">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <p class="empty-title">No se encontraron canciones</p>
+                <p class="empty-subtitle">Intenta con otro término o limpia los filtros.</p>
+                <button id="reset-filter-btn" class="btn-primary-outline">Restablecer Búsqueda</button>
+            </div>
+        </section>
+
+        <!-- Divisor Decorativo Neón -->
+        <div class="layout-divider" aria-hidden="true"></div>
+
+        <!-- Columna Derecha: Reproductor en Reproducción (Sticky) -->
+        <aside class="player-aside" aria-label="Panel de reproducción actual">
+            <div id="player" class="player-card">
+                <!-- Portada del Álbum con Efecto Ambient Glow y Ecualizador -->
+                <div class="cover-wrapper">
+                    <div id="ambient-glow" class="ambient-glow"></div>
+                    <img 
+                        src="../Assets/starting.jpg" 
+                        id="song-image" 
+                        class="song-cover" 
+                        alt="Portada de la canción actual"
+                        width="360"
+                        height="360"
+                        loading="eager"
+                        decoding="async"
+                    >
+                    <!-- Indicador Animado de Audio Activo -->
+                    <div id="equalizer-badge" class="equalizer-badge" aria-hidden="true">
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                    </div>
+                </div>
+
+                <!-- Metadatos de la Canción -->
+                <div class="song-info">
+                    <h2 id="song-title" class="song-title" title="Título de la canción">Selecciona una pista</h2>
+                    <p id="song-author" class="song-artist" title="Artista">BEATS Music Player</p>
+                    <span id="song-genre-tag" class="genre-tag hidden">Pop</span>
+                </div>
+
+                <!-- Barra de Progreso y Tiempo (Scrubber) -->
+                <div class="progress-section" aria-label="Control de tiempo">
+                    <div class="progress-container" id="progress-container" role="slider" aria-label="Progreso de la canción" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                        <div id="progress-hover-fill" class="progress-hover-fill"></div>
+                        <div id="progress-thumb" class="progress-thumb"></div>
+                        <span id="progress-tooltip" class="progress-tooltip hidden">0:00</span>
+                    </div>
+                    <div class="time-display">
+                        <span id="current-time">0:00</span>
+                        <span id="total-duration">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Controles Principales de Reproducción -->
+                <div class="player-controls">
+                    <!-- Botón Modo Aleatorio (Shuffle) -->
+                    <button id="shuffle-button" class="control-btn secondary-btn" aria-label="Activar modo aleatorio" aria-pressed="false" title="Aleatorio (S)">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Botón Anterior -->
+                    <button id="back-button" class="control-btn" aria-label="Canción anterior" title="Anterior (P o ←)">
+                        <img src="../Assets/back.png" alt="" width="22" height="22" aria-hidden="true">
+                    </button>
+
+                    <!-- Botón Play/Pause Principal -->
+                    <button id="play-pause-button" class="control-btn play-btn" aria-label="Reproducir canción" title="Reproducir / Pausar (Espacio)">
+                        <img src="../Assets/play.png" alt="" id="play-pause-icon" width="26" height="26" aria-hidden="true">
+                    </button>
+
+                    <!-- Botón Siguiente -->
+                    <button id="next-button" class="control-btn" aria-label="Siguiente canción" title="Siguiente (N o →)">
+                        <img src="../Assets/next.png" alt="" width="22" height="22" aria-hidden="true">
+                    </button>
+
+                    <!-- Botón Repetir (Repeat: Off / All / One) -->
+                    <button id="repeat-button" class="control-btn secondary-btn" aria-label="Modo repetición" data-mode="off" title="Repetir (R)">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                        </svg>
+                        <span id="repeat-badge" class="repeat-one-badge hidden">1</span>
+                    </button>
+                </div>
+
+                <!-- Controles Secundarios: Volumen y Velocidad -->
+                <div class="secondary-controls">
+                    <!-- Control de Volumen -->
+                    <div class="volume-container">
+                        <button id="mute-button" class="mute-btn" aria-label="Silenciar o reactivar sonido" title="Silenciar (M)">
+                            <svg id="volume-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                        </button>
+                        <input 
+                            type="range" 
+                            id="volume-slider" 
+                            class="volume-slider" 
+                            min="0" 
+                            max="1" 
+                            step="0.01" 
+                            value="0.8" 
+                            aria-label="Nivel de volumen"
+                        >
+                    </div>
+
+                    <!-- Selector de Velocidad de Reproducción -->
+                    <div class="speed-selector">
+                        <button id="speed-btn" class="speed-btn" aria-label="Velocidad de reproducción" title="Velocidad">1.0x</button>
+                    </div>
+                </div>
+
+                <!-- Elemento Audio Nativo (Configurado para rendimiento y seguridad) -->
+                <audio id="audio-player" preload="metadata" crossorigin="anonymous"></audio>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Mini Reproductor Flotante para Dispositivos Móviles -->
+    <div id="mobile-mini-player" class="mobile-mini-player hidden" aria-label="Reproductor móvil rápido">
+        <img src="../Assets/starting.jpg" id="mobile-thumb" class="mobile-thumb" alt="" width="48" height="48">
+        <div class="mobile-meta">
+            <span id="mobile-title" class="mobile-title">Selecciona una pista</span>
+            <span id="mobile-artist" class="mobile-artist">BEATS</span>
+        </div>
+        <div class="mobile-actions">
+            <button id="mobile-play-btn" class="mobile-action-btn" aria-label="Reproducir o pausar">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            <button id="mobile-next-btn" class="mobile-action-btn" aria-label="Siguiente canción">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Accesible: Atajos de Teclado -->
+    <div id="shortcuts-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">Atajos de Teclado</h3>
+                <button id="close-modal-btn" class="modal-close-btn" aria-label="Cerrar ventana">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcut-row"><kbd>Espacio</kbd> <span>Reproducir / Pausar</span></div>
+                <div class="shortcut-row"><kbd>→</kbd> / <kbd>N</kbd> <span>Siguiente canción</span></div>
+                <div class="shortcut-row"><kbd>←</kbd> / <kbd>P</kbd> <span>Canción anterior</span></div>
+                <div class="shortcut-row"><kbd>↑</kbd> / <kbd>↓</kbd> <span>Subir / Bajar volumen</span></div>
+                <div class="shortcut-row"><kbd>M</kbd> <span>Silenciar (Mute)</span></div>
+                <div class="shortcut-row"><kbd>S</kbd> <span>Alternar modo aleatorio</span></div>
+                <div class="shortcut-row"><kbd>R</kbd> <span>Alternar modo repetición</span></div>
+                <div class="shortcut-row"><kbd>/</kbd> <span>Enfocar barra de búsqueda</span></div>
+                <div class="shortcut-row"><kbd>Esc</kbd> <span>Cerrar diálogos / Limpiar búsqueda</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de Notificaciones Toast -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Script Modular Principal (ES6 Modules) -->
+    <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
